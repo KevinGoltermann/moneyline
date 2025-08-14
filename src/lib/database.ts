@@ -128,7 +128,7 @@ export async function getPerformanceStats() {
       .select('*')
       .maybeSingle()
     
-    // If no data exists, return default stats
+    // If no data exists, return default stats matching the view structure
     if (!data && !error) {
       return {
         data: {
@@ -136,10 +136,10 @@ export async function getPerformanceStats() {
           wins: 0,
           losses: 0,
           pushes: 0,
+          settled_picks: 0,
           win_rate: 0,
-          avg_odds: 0,
-          total_profit: 0
-        },
+          current_streak: null
+        } as PerformanceStats,
         error: null
       }
     }
