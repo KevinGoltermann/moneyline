@@ -1,0 +1,26 @@
+{
+  "name": "DailyBet AI - ML-Powered Betting Recommendations",
+  "short_name": "DailyBet AI",
+  "description": "Get daily betting recommendations powered by machine learning analysis of odds, team performance, and market data.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "32x32",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+  "categories": ["sports", "finance", "productivity"],
+  "lang": "en",
+  "dir": "ltr"
+}

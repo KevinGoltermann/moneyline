@@ -1,0 +1,43 @@
+name: System Monitoring
+
+on:
+  schedule:
+    # Run every 4 hours
+    - cron: '0 */4 * * *'
+  workflow_dispatch: # Allow manual triggering
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Run system monitoring
+      env:
+        VERCEL_URL: ${{ secrets.VERCEL_URL }}
+        ADMIN_SECRET: ${{ secrets.ADMIN_SECRET }}
+      run: |
+        node scripts/monitor-system.js \
+          --url ${{ secrets.VERCEL_URL || 'https://dailybet-ai.vercel.app' }} \
+          --admin-secret ${{ secrets.ADMIN_SECRET }} \
+          --verbose
+          
+    - name: Notify on failure
+      if: failure()
+      uses: 8398a7/action-slack@v3
+      with:
+        status: failure
+        text: 'DailyBet AI system monitoring failed!'
+        webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
