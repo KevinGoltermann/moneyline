@@ -186,29 +186,34 @@ class MLResponse(BaseModel):
 #### ML Pipeline Architecture
 
 1. **Data Ingestion Layer**
-   - Odds API integration (The Odds API or similar)
-   - Weather data fetching (OpenWeatherMap)
-   - Team statistics and injury reports
-   - Line movement tracking
+   - Odds API integration with line movement tracking
+   - Weather data with sport-specific impact modeling
+   - Advanced team statistics (offensive/defensive efficiency)
+   - Injury reports with position-specific impact analysis
+   - Schedule data for rest/travel calculations
+   - Historical matchup and situational data
 
 2. **Feature Engineering**
-   - Odds movement calculations
-   - Team momentum metrics (last 5-10 games)
-   - Weather impact factors
-   - Home/away advantages
-   - Rest days and travel factors
+   - **Team Performance Features**: Offensive rating, defensive rating, net rating, pace-adjusted metrics
+   - **Situational Features**: Rest days, travel distance, time zone changes, home/away splits
+   - **Contextual Features**: Weather impact by sport, venue-specific factors, altitude adjustments
+   - **Advanced Analytics**: Clutch performance, strength of schedule, recent form with opponent adjustments
+   - **Market Features**: Line movement analysis, market efficiency, sharp vs public money
+   - **Injury Impact**: Position-weighted injury analysis, replacement player quality assessment
 
 3. **Model Layer**
-   - XGBoost classifier for win probability
-   - Expected value calculation
-   - Confidence scoring based on feature importance
-   - Fallback to logistic regression if needed
+   - **Ensemble Approach**: Combines XGBoost, Random Forest, and Neural Network predictions
+   - **Specialized Models**: Separate models for different sports and situations
+   - **Feature Importance**: Dynamic feature weighting based on data quality and relevance
+   - **Confidence Calibration**: Platt scaling for accurate probability estimates
+   - **Expected Value Optimization**: Kelly criterion for optimal bet sizing recommendations
 
 4. **Selection Logic**
-   - Filter games by minimum odds threshold
-   - Calculate expected value for each option
-   - Select highest EV pick above confidence threshold
-   - Generate human-readable rationale
+   - Multi-criteria decision analysis considering EV, confidence, and risk
+   - Dynamic threshold adjustment based on market conditions
+   - Portfolio optimization when multiple strong picks exist
+   - Risk management with maximum exposure limits
+   - Detailed rationale generation with factor attribution
 
 ## Data Models
 
