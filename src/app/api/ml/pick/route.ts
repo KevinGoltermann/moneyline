@@ -158,15 +158,15 @@ except Exception as e:
       let output = '';
       let error = '';
 
-      python.stdout.on('data', (data) => {
+      python.stdout.on('data', (data: Buffer) => {
         output += data.toString();
       });
 
-      python.stderr.on('data', (data) => {
+      python.stderr.on('data', (data: Buffer) => {
         error += data.toString();
       });
 
-      python.on('close', (code) => {
+      python.on('close', (code: number | null) => {
         try {
           if (code === 0 && output.trim()) {
             const result = JSON.parse(output.trim());
