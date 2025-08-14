@@ -136,7 +136,7 @@ class MLPredictionEngine:
         return candidates
     
     def _enhance_game_data(self, game: Game) -> Game:
-        """Enhance game data with external API information."""
+        """Enhance game data with comprehensive external API information."""
         try:
             # Get updated odds if needed
             if not game.odds:
@@ -150,15 +150,36 @@ class MLPredictionEngine:
                     game.venue, game.start_time
                 )
             
-            # Get injury reports if not provided
+            # Get comprehensive injury reports
             if not game.injuries:
                 home_injuries = self.sports_api.get_injury_report(game.home_team, game.league)
                 away_injuries = self.sports_api.get_injury_report(game.away_team, game.league)
-                game.injuries = [
-                    f"{inj['player']} ({inj['status']})" 
-                    for inj in home_injuries + away_injuries
-                    if inj.get('impact') == 'High'
-                ]
+                
+                # Include all significant injuries with position info
+                injury_list = []
+                for inj in home_injuries + away_injuries:
+                    if inj.get('impact') in ['High', 'Medium']:
+                        injury_list.append(
+                            f"{inj['player']} ({inj['position']}) - {inj['status']}"
+                        )
+                game.injuries = injury_list
+            
+            # Enhance with schedule data for rest/travel analysis
+            home_schedule = self.sports_api.get_team_schedule(game.home_team, game.league)
+            away_schedule = self.sports_api.get_team_schedule(game.away_team, game.league)
+            
+            # Add schedule context to game object (extend Game model if needed)
+            if not hasattr(game, 'schedule_context'):
+                game.schedule_context = {
+                    'home_schedule': home_schedule,
+                    'away_schedule': away_schedule
+                }
+            
+            # Get venue information for altitude/environmental factors
+            if game.venue:
+                venue_info = self.sports_api.get_venue_info(game.venue)
+                if not hasattr(game, 'venue_info'):
+                    game.venue_info = venue_info
             
             return game
             
@@ -342,24 +363,79 @@ class MLPredictionEngine:
     
     def _features_to_array(self, features: FeatureVector, selection: str) -> np.ndarray:
         """Convert feature vector to numpy array for model input."""
-        # Define feature order (must match training data)
+        # Define comprehensive feature order (must match training data)
         feature_values = [
+            # Basic odds and market features
             features.odds_value,
             features.odds_movement or 0.0,
             features.market_efficiency or 1.0,
+            
+            # Basic team performance
             features.home_win_rate,
             features.away_win_rate,
             features.head_to_head_record or 0.5,
             features.recent_form_home,
             features.recent_form_away,
+            
+            # Advanced efficiency metrics
+            features.home_offensive_rating or 100.0,
+            features.home_defensive_rating or 100.0,
+            features.home_net_rating or 0.0,
+            features.home_pace or 100.0,
+            features.away_offensive_rating or 100.0,
+            features.away_defensive_rating or 100.0,
+            features.away_net_rating or 0.0,
+            features.away_pace or 100.0,
+            
+            # Matchup advantages
+            features.offensive_matchup_advantage or 0.0,
+            features.defensive_matchup_advantage or 0.0,
+            features.pace_differential or 0.0,
+            
+            # Advanced form metrics
+            features.home_form_weighted or 0.5,
+            features.home_form_vs_quality or 0.5,
+            features.away_form_weighted or 0.5,
+            features.away_form_vs_quality or 0.5,
+            features.home_form_trend or 0.0,
+            features.away_form_trend or 0.0,
+            
+            # Strength of schedule
+            features.home_sos_past or 0.5,
+            features.away_sos_past or 0.5,
+            features.home_sos_future or 0.5,
+            features.away_sos_future or 0.5,
+            features.home_record_vs_quality or 0.5,
+            features.away_record_vs_quality or 0.5,
+            
+            # Contextual features
             features.rest_days_home or 3,
             features.rest_days_away or 3,
             features.travel_distance or 0.0,
             features.weather_impact or 0.0,
-            features.strength_of_schedule or 0.5,
+            
+            # Advanced situational metrics
+            features.fatigue_factor_home or 0.0,
+            features.fatigue_factor_away or 0.0,
+            features.timezone_adjustment or 0.0,
+            features.altitude_adjustment or 0.0,
+            
+            # Injury and depth
             features.injury_impact or 0.0,
+            features.depth_chart_impact or 0.0,
+            
+            # Motivation and psychological
             features.motivation_factor or 0.0,
-            1.0 if selection == "home" else 0.0  # Home indicator
+            features.revenge_game_factor or 0.0,
+            features.playoff_implications or 0.0,
+            
+            # Market factors
+            features.sharp_money_indicator or 0.0,
+            features.public_betting_percentage or 50.0,
+            features.line_movement_significance or 0.0,
+            
+            # Selection indicator
+            1.0 if selection == "home" else 0.0
         ]
         
         return np.array(feature_values, dtype=np.float32)
@@ -564,15 +640,47 @@ class MLPredictionEngine:
             # For now, we'll create placeholder models
             
             if xgb:
-                # Create a simple XGBoost model structure
-                # This would be replaced with actual model loading
+                # Create comprehensive feature names list
                 self.feature_names = [
+                    # Basic odds and market features
                     'odds_value', 'odds_movement', 'market_efficiency',
+                    
+                    # Basic team performance
                     'home_win_rate', 'away_win_rate', 'head_to_head_record',
                     'recent_form_home', 'recent_form_away',
-                    'rest_days_home', 'rest_days_away', 'travel_distance',
-                    'weather_impact', 'strength_of_schedule', 'injury_impact',
-                    'motivation_factor', 'home_indicator'
+                    
+                    # Advanced efficiency metrics
+                    'home_offensive_rating', 'home_defensive_rating', 'home_net_rating', 'home_pace',
+                    'away_offensive_rating', 'away_defensive_rating', 'away_net_rating', 'away_pace',
+                    
+                    # Matchup advantages
+                    'offensive_matchup_advantage', 'defensive_matchup_advantage', 'pace_differential',
+                    
+                    # Advanced form metrics
+                    'home_form_weighted', 'home_form_vs_quality', 'away_form_weighted', 'away_form_vs_quality',
+                    'home_form_trend', 'away_form_trend',
+                    
+                    # Strength of schedule
+                    'home_sos_past', 'away_sos_past', 'home_sos_future', 'away_sos_future',
+                    'home_record_vs_quality', 'away_record_vs_quality',
+                    
+                    # Contextual features
+                    'rest_days_home', 'rest_days_away', 'travel_distance', 'weather_impact',
+                    
+                    # Advanced situational metrics
+                    'fatigue_factor_home', 'fatigue_factor_away', 'timezone_adjustment', 'altitude_adjustment',
+                    
+                    # Injury and depth
+                    'injury_impact', 'depth_chart_impact',
+                    
+                    # Motivation and psychological
+                    'motivation_factor', 'revenge_game_factor', 'playoff_implications',
+                    
+                    # Market factors
+                    'sharp_money_indicator', 'public_betting_percentage', 'line_movement_significance',
+                    
+                    # Selection indicator
+                    'home_indicator'
                 ]
                 
                 # Placeholder - would load actual trained model

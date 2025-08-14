@@ -64,17 +64,35 @@ DailyBet AI is a public web application that provides a single, ML-powered "Bet 
 
 ### Requirement 6
 
-**User Story:** As the ML service, I want to process multiple data sources efficiently, so that I can generate accurate betting recommendations within serverless execution limits.
+**User Story:** As the ML service, I want to process comprehensive data sources and advanced analytics, so that I can generate highly accurate betting recommendations using sophisticated algorithms.
 
 #### Acceptance Criteria
 
-1. WHEN the ML service receives a request THEN it SHALL process odds data, team statistics, weather conditions, and injury reports
-2. WHEN analyzing betting opportunities THEN the system SHALL focus on moneyline markets initially
-3. WHEN calculating recommendations THEN the ML model SHALL output probabilities and select the highest expected value option
-4. WHEN returning results THEN the service SHALL include the pick, market, odds, confidence percentage, and top contributing factors
-5. IF processing exceeds time limits THEN the system SHALL implement graceful degradation with simpler models
+1. WHEN the ML service receives a request THEN it SHALL process odds data, team statistics, weather conditions, injury reports, recent performance trends, and situational factors
+2. WHEN analyzing team performance THEN the system SHALL calculate offensive efficiency, defensive efficiency, pace of play, and clutch performance metrics
+3. WHEN evaluating situational factors THEN the system SHALL consider rest days, travel distance, home/away splits, and historical matchup data
+4. WHEN processing injury data THEN the system SHALL weight injuries by player importance and position impact on team performance
+5. WHEN analyzing odds THEN the system SHALL track line movements, market efficiency, and identify value opportunities
+6. WHEN calculating recommendations THEN the ML model SHALL use ensemble methods combining multiple algorithms for robust predictions
+7. WHEN returning results THEN the service SHALL include the pick, market, odds, confidence percentage, expected value, and detailed factor analysis
+8. IF processing exceeds time limits THEN the system SHALL implement graceful degradation prioritizing the most impactful features
 
 ### Requirement 7
+
+**User Story:** As the ML service, I want to implement advanced analytical features beyond basic statistics, so that I can provide sophisticated betting insights that consider all relevant factors.
+
+#### Acceptance Criteria
+
+1. WHEN analyzing team strength THEN the system SHALL calculate advanced metrics including offensive rating, defensive rating, net rating, and pace adjustments
+2. WHEN evaluating recent performance THEN the system SHALL weight games by recency and opponent strength using exponential decay functions
+3. WHEN processing rest and travel factors THEN the system SHALL calculate fatigue impact based on days of rest, travel distance, and time zone changes
+4. WHEN analyzing weather conditions THEN the system SHALL consider sport-specific impacts including wind effects on passing games and temperature effects on player performance
+5. WHEN evaluating clutch performance THEN the system SHALL analyze late-game performance, pressure situations, and historical performance in similar contexts
+6. WHEN processing injury data THEN the system SHALL use position-specific impact models and consider replacement player quality
+7. WHEN analyzing motivation factors THEN the system SHALL consider playoff implications, rivalry games, revenge games, and season context
+8. WHEN calculating strength of schedule THEN the system SHALL use opponent-adjusted metrics and consider both past and future schedule difficulty
+
+### Requirement 8
 
 **User Story:** As a developer, I want the application to deploy seamlessly to Vercel with proper scheduling, so that the system runs reliably in production.
 

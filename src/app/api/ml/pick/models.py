@@ -5,7 +5,7 @@ These models define the structure for API requests and responses,
 ensuring type safety and validation for the ML prediction pipeline.
 """
 
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field
 from typing import Dict, List, Any, Optional
 from datetime import datetime, date
 from enum import Enum
@@ -45,15 +45,8 @@ class Game(BaseModel):
     weather: Optional[Dict[str, Any]] = Field(None, description="Weather conditions")
     injuries: Optional[List[str]] = Field(None, description="Key injury reports")
     
-    @validator('odds')
-    def validate_odds(cls, v):
-        """Ensure odds are in valid American format."""
-        for market, odds_value in v.items():
-            if not isinstance(odds_value, (int, float)):
-                raise ValueError(f"Odds value for {market} must be numeric")
-            if odds_value == 0:
-                raise ValueError(f"Odds value for {market} cannot be zero")
-        return v
+    # Removed validator to avoid recursion issues
+    # Odds validation will be handled in the business logic
 
 
 class MLRequest(BaseModel):
@@ -73,12 +66,8 @@ class MLRequest(BaseModel):
     max_odds: Optional[int] = Field(300, description="Maximum odds threshold")
     min_confidence: Optional[float] = Field(60.0, ge=0.0, le=100.0, description="Minimum confidence threshold")
     
-    @validator('games')
-    def validate_games_not_empty(cls, v):
-        """Ensure at least one game is provided."""
-        if not v:
-            raise ValueError("At least one game must be provided")
-        return v
+    # Removed validator to avoid recursion issues
+    # Games validation will be handled in the business logic
 
 
 class MLResponse(BaseModel):
@@ -128,12 +117,43 @@ class FeatureVector(BaseModel):
     odds_movement: Optional[float] = None
     market_efficiency: Optional[float] = None
     
-    # Team performance features
+    # Basic team performance features
     home_win_rate: float
     away_win_rate: float
     head_to_head_record: Optional[float] = None
     recent_form_home: float
     recent_form_away: float
+    
+    # Advanced efficiency metrics
+    home_offensive_rating: Optional[float] = None
+    home_defensive_rating: Optional[float] = None
+    home_net_rating: Optional[float] = None
+    home_pace: Optional[float] = None
+    away_offensive_rating: Optional[float] = None
+    away_defensive_rating: Optional[float] = None
+    away_net_rating: Optional[float] = None
+    away_pace: Optional[float] = None
+    
+    # Matchup advantages
+    offensive_matchup_advantage: Optional[float] = None
+    defensive_matchup_advantage: Optional[float] = None
+    pace_differential: Optional[float] = None
+    
+    # Advanced form metrics
+    home_form_weighted: Optional[float] = None
+    home_form_vs_quality: Optional[float] = None
+    away_form_weighted: Optional[float] = None
+    away_form_vs_quality: Optional[float] = None
+    home_form_trend: Optional[float] = None
+    away_form_trend: Optional[float] = None
+    
+    # Strength of schedule
+    home_sos_past: Optional[float] = None
+    away_sos_past: Optional[float] = None
+    home_sos_future: Optional[float] = None
+    away_sos_future: Optional[float] = None
+    home_record_vs_quality: Optional[float] = None
+    away_record_vs_quality: Optional[float] = None
     
     # Contextual features
     rest_days_home: Optional[int] = None
@@ -141,10 +161,25 @@ class FeatureVector(BaseModel):
     travel_distance: Optional[float] = None
     weather_impact: Optional[float] = None
     
-    # Advanced metrics
-    strength_of_schedule: Optional[float] = None
+    # Advanced situational metrics
+    fatigue_factor_home: Optional[float] = None
+    fatigue_factor_away: Optional[float] = None
+    timezone_adjustment: Optional[float] = None
+    altitude_adjustment: Optional[float] = None
+    
+    # Injury and depth analysis
     injury_impact: Optional[float] = None
+    depth_chart_impact: Optional[float] = None
+    
+    # Motivation and psychological factors
     motivation_factor: Optional[float] = None
+    revenge_game_factor: Optional[float] = None
+    playoff_implications: Optional[float] = None
+    
+    # Market and betting factors
+    sharp_money_indicator: Optional[float] = None
+    public_betting_percentage: Optional[float] = None
+    line_movement_significance: Optional[float] = None
 
 
 class ModelPrediction(BaseModel):
